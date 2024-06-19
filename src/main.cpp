@@ -1,34 +1,60 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <glm/vec4.hpp>
-#include <glm/mat4x4.hpp>
-
 #include <iostream>
+#include <stdexcept>
+#include <cstdlib>
 
-int main() {
-    glfwInit();
+const uint32_t WIDTH = 800;
+const uint32_t HEIGHT = 600;
 
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    GLFWwindow* window = glfwCreateWindow(800, 600, "Vulkan window", nullptr, nullptr);
+class BasicApplication {
+public:
+void run() {
+    initWindow();
+    initVulkan();
+    mainLoop();
+    cleanup();
+}
 
-    uint32_t extensionCount = 0;
-    vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+private:
+    GLFWwindow* _window;
 
-    std::cout << extensionCount << " extensions supported\n";
+private:
+    void initWindow() {
+        glfwInit();
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API); // Remove WGL support
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // Remove resizable windows
 
-    glm::mat4 matrix;
-    glm::vec4 vec;
-    auto test = matrix * vec;
+        _window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
+    }
+    
+    void initVulkan() {
 
-    while(!glfwWindowShouldClose(window)) {
-        glfwPollEvents();
     }
 
-    glfwDestroyWindow(window);
+    void mainLoop() {
+        while (!glfwWindowShouldClose(_window)) {
+            glfwPollEvents();
+        }
+    }
 
-    glfwTerminate();
+    void cleanup() {
+        glfwDestroyWindow(_window);
 
-    return 0;
+        glfwTerminate();
+    }
+};
+
+int main() {
+    BasicApplication app;
+
+    try {
+        app.run();
+    } catch (const std::exception& e) {
+        std::cerr << e.what() << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    return EXIT_SUCCESS;
 }

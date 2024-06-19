@@ -11,3 +11,4 @@ run:
     ./build/$PROJECT_NAME
 
 bundle: init build run
+rerun: build run

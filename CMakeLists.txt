@@ -10,7 +10,9 @@ endif()
 project(${PROJECT_NAME})
 
 find_package(fmt CONFIG REQUIRED)
+find_package(Vulkan REQUIRED)
 
 add_executable(${PROJECT_NAME} ./src/main.cpp)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt)
+target_link_libraries(${PROJECT_NAME} PRIVATE glfw Vulkan::Vulkan dl pthread X11 Xxf86vm Xrandr Xi)

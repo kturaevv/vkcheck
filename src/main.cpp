@@ -23,13 +23,13 @@ const std::vector<const char*> VALIDATION_LAYERS = {
 
 // Logging debug primitives
 #ifdef NDEBUG
-    #define LOG_INFO(...) 
+    #define LOG(...) 
 #else
     #include <fmt/core.h>
     #include <fmt/chrono.h>
     #include <iostream>
 
-    #define LOG_INFO(...) fmt::print("[INFO] [{}] [{}:{}] {}\n", getCurrentTime(), __FILE__, __LINE__, fmt::format(__VA_ARGS__))
+    #define LOG(...) fmt::print("[INFO] [{}] [{}:{}] {}\n", getCurrentTime(), __FILE__, __LINE__, fmt::format(__VA_ARGS__))
 
     std::string getCurrentTime() {
         auto now = std::chrono::system_clock::now();
@@ -67,24 +67,24 @@ private:
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API); // Remove WGL support
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // Remove resizable windows
 
-        _window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
-        LOG_INFO("Window initialized");
+        this->_window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
+        LOG("Window initialized");
     }
     
     void initVulkan() {
         createInstance();
         pickPhysicalDevice();
-        LOG_INFO("Vulkan initialized");
+        LOG("Vulkan initialized");
     }
 
     void mainLoop() {
-        while (!glfwWindowShouldClose(_window)) {
+        while (!glfwWindowShouldClose(this->_window)) {
             glfwPollEvents();
         }
     }
 
     void createInstance() {
-        LOG_INFO("Validation layers check");
+        LOG("Validation layers check");
         if (enableValidationLayers && !checkValidationLayerSupport()) {
             throw std::runtime_error("validation layers requested, but not available!");
         }
@@ -96,7 +96,7 @@ private:
         appInfo.pEngineName = "No Engine";
         appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
         appInfo.apiVersion = VK_API_VERSION_1_0;
-        LOG_INFO("VkApplicationInfo initialized");
+        LOG("VkApplicationInfo initialized");
 
         uint32_t glfwExtensionCount = 0;
         const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
@@ -112,36 +112,36 @@ private:
             createInfo.enabledLayerCount = static_cast<uint32_t>(VALIDATION_LAYERS.size());
             createInfo.ppEnabledLayerNames = VALIDATION_LAYERS.data();
         } 
-        LOG_INFO("VkInstanceCreateInfo initialized");
+        LOG("VkInstanceCreateInfo initialized");
 
-        if (vkCreateInstance(&createInfo, nullptr, &_instance) != VK_SUCCESS) {
+        if (vkCreateInstance(&createInfo, nullptr, &this->_instance) != VK_SUCCESS) {
             throw std::runtime_error("failed to create an instance!");
         }
-        LOG_INFO("Vulkan instance created");
+        LOG("Vulkan instance created");
     }
 
     void pickPhysicalDevice() {
         uint32_t deviceCount = 0;
-        vkEnumeratePhysicalDevices(_instance, &deviceCount, nullptr);
+        vkEnumeratePhysicalDevices(this->_instance, &deviceCount, nullptr);
 
         if (deviceCount == 0) {
             throw std::runtime_error("failed to find GPUs with Vulkan support!");
         }
 
         std::vector<VkPhysicalDevice> devices(deviceCount);
-        vkEnumeratePhysicalDevices(_instance, &deviceCount, devices.data());
+        vkEnumeratePhysicalDevices(this->_instance, &deviceCount, devices.data());
 
         for (const auto& device : devices) {
             if (isDeviceSuitable(device)) {
-                _physicalDevice = device;
+                this->_physicalDevice = device;
                 break;
             }
         }
 
-        if (_physicalDevice == VK_NULL_HANDLE) {
+        if (this->_physicalDevice == VK_NULL_HANDLE) {
             throw std::runtime_error("failed to find a suitable GPU!");
         }
-        LOG_INFO("Physical device has been picked");
+        LOG("Physical device has been picked");
     }
 
     bool isDeviceSuitable(VkPhysicalDevice device) {
@@ -201,9 +201,9 @@ private:
     }
     
     void cleanup() {
-        vkDestroyInstance(_instance, nullptr);
+        vkDestroyInstance(this->_instance, nullptr);
 
-        glfwDestroyWindow(_window);
+        glfwDestroyWindow(this->_window);
         glfwTerminate();
     }
 };

@@ -59,6 +59,8 @@ void run() {
 private:
     GLFWwindow* _window;
     VkInstance _instance;
+    VkDevice _device;
+    VkQueue _graphicsQueue;
     VkPhysicalDevice _physicalDevice = VK_NULL_HANDLE;
 
 private:
@@ -74,6 +76,7 @@ private:
     void initVulkan() {
         createInstance();
         pickPhysicalDevice();
+        createLogicalDevice();
         LOG("Vulkan initialized");
     }
 
@@ -144,6 +147,29 @@ private:
         LOG("Physical device has been picked");
     }
 
+    void createLogicalDevice() {
+        float queuePriority = 1.0f;
+        QueueFamilyIndices indices = findQueueFamilies(this->_physicalDevice);
+
+        VkDeviceQueueCreateInfo queueCreateInfo{};
+        queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+        queueCreateInfo.queueFamilyIndex = indices.graphicsFamily.value();
+        queueCreateInfo.queueCount = 1;
+        queueCreateInfo.pQueuePriorities = &queuePriority;
+
+        VkPhysicalDeviceFeatures deviceFeatures{};
+        VkDeviceCreateInfo createInfo{};
+        createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+        createInfo.pQueueCreateInfos = &queueCreateInfo;
+        createInfo.queueCreateInfoCount = 1;
+        createInfo.pEnabledFeatures = &deviceFeatures;
+
+        if (vkCreateDevice(this->_physicalDevice, &createInfo, nullptr, &this->_device) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create logical device!");
+        }
+        LOG("Logical device has been created");
+    }
+
     bool isDeviceSuitable(VkPhysicalDevice device) {
         QueueFamilyIndices indices = findQueueFamilies(device);
 
@@ -201,6 +227,7 @@ private:
     }
     
     void cleanup() {
+        vkDestroyDevice(this->_device, nullptr);
         vkDestroyInstance(this->_instance, nullptr);
 
         glfwDestroyWindow(this->_window);

@@ -1,0 +1,14 @@
+instance - API
+phys. device - choose device capabilities
+surface - choose plane to render to
+queue - send buffers to 
+swap chain - draw / render process
+image view  - where to draw wrapper over img
+frame buffer - what to draw, i.e. color depth
+render pass - define a type to render
+pipeline - GPU state programmable? state
+command buffer - all ops. go through cmd. buff via queue.
+
+async execution, use sync. objects
+	
+

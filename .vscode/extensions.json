@@ -1,0 +1,9 @@
+{
+    "recommendations": [
+        "xaver.clang-format",
+        "tdennis4496.cmantic",
+        "llvm-vs-code-extensions.vscode-clangd",
+        "vadimcn.vscode-lldb",
+        "usernamehw.errorlens"
+    ]
+}

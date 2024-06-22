@@ -10,5 +10,3 @@ pipeline - GPU state programmable? state
 command buffer - all ops. go through cmd. buff via queue.
 
 async execution, use sync. objects
-	
-
